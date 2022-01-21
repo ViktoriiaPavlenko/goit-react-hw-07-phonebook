@@ -13,22 +13,25 @@ export default function ContactList() {
       name.toLowerCase().includes(filter.toLowerCase()),
     );
 
-  const filteredContacts = data ? getFilteredContacts(data) : null;
+  const filteredContacts = data ? getFilteredContacts(data) : [];
 
   return (
     <>
-      {error && <div className={styles.warning}>You have no contacts!</div>}
-      <ul className={styles.list}>
-        {data &&
-          filteredContacts.map(({ id, name, phone }) => (
-            <ContactsListItem
-              key={id}
-              id={id}
-              name={name}
-              phoneNumber={phone}
-            />
-          ))}
-      </ul>
+      {error || (filteredContacts && filteredContacts.length === 0) ? (
+        <div className={styles.warning}>You have no contacts!</div>
+      ) : (
+        <ul className={styles.list}>
+          {data &&
+            filteredContacts.map(({ id, name, phone }) => (
+              <ContactsListItem
+                key={id}
+                id={id}
+                name={name}
+                phoneNumber={phone}
+              />
+            ))}
+        </ul>
+      )}
     </>
   );
 }

@@ -6,7 +6,8 @@ import {
 import { nanoid } from 'nanoid';
 import { BallTriangle } from 'react-loader-spinner';
 import 'react-toastify/dist/ReactToastify.css';
-import toast from '../../helpers/toast';
+import warning from '../../helpers/warning';
+import error from '../../helpers/error';
 import styles from './ContactsForm.module.css';
 
 export default function ContactsForm() {
@@ -14,7 +15,7 @@ export default function ContactsForm() {
   const [phone, setPhone] = useState('');
 
   const { data: contacts } = useFetchContactsQuery();
-  const [saveContact, { isLoading, isSuccess }] = useSaveContactMutation();
+  const [saveContact, { isLoading }] = useSaveContactMutation();
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -26,10 +27,11 @@ export default function ContactsForm() {
 
     if (!getContactExistence) {
       saveContact(contact);
+      warning();
       reset();
       return;
     }
-    toast(name);
+    error(name);
     reset();
   };
 
@@ -53,46 +55,43 @@ export default function ContactsForm() {
   };
 
   return (
-    <>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <label className={styles.label}>
-          Name
-          <input
-            className={styles.input}
-            type="text"
-            name="name"
-            value={name}
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            required
-            onChange={handleChange}
-          />
-        </label>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <label className={styles.label}>
+        Name
+        <input
+          className={styles.input}
+          type="text"
+          name="name"
+          value={name}
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          required
+          onChange={handleChange}
+        />
+      </label>
 
-        <label className={styles.label}>
-          Number
-          <input
-            className={styles.input}
-            type="tel"
-            name="phone"
-            value={phone}
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-            required
-            onChange={handleChange}
-          />
-        </label>
-        {isLoading ? (
-          <button className={styles.button}>
-            <BallTriangle height="40" width="40" color="beige" />
-          </button>
-        ) : (
-          <button className={styles.button} type="submit">
-            Add contact
-          </button>
-        )}
-      </form>
-      <div>{isSuccess && <p>Saved!</p>}</div>
-    </>
+      <label className={styles.label}>
+        Number
+        <input
+          className={styles.input}
+          type="tel"
+          name="phone"
+          value={phone}
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          required
+          onChange={handleChange}
+        />
+      </label>
+      {isLoading ? (
+        <button className={styles.button}>
+          <BallTriangle height="40" width="40" color="beige" />
+        </button>
+      ) : (
+        <button className={styles.button} type="submit">
+          Add contact
+        </button>
+      )}
+    </form>
   );
 }
