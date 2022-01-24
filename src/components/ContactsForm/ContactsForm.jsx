@@ -3,7 +3,6 @@ import {
   useSaveContactMutation,
   useFetchContactsQuery,
 } from '../../redux/contacts/contacts-reducer';
-import { nanoid } from 'nanoid';
 import { BallTriangle } from 'react-loader-spinner';
 import 'react-toastify/dist/ReactToastify.css';
 import warning from '../../helpers/warning';
@@ -17,21 +16,30 @@ export default function ContactsForm() {
   const { data: contacts } = useFetchContactsQuery();
   const [saveContact, { isLoading }] = useSaveContactMutation();
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    const contact = { id: nanoid(), name, phone };
+    const contact = { name, phone };
 
-    const getContactExistence = contacts.find(
+    const getNameExistence = contacts.find(
       contact => contact.name.toLowerCase() === name.toLowerCase(),
     );
 
-    if (!getContactExistence) {
-      saveContact(contact);
-      warning();
+    const getNumberExistence = contacts.find(
+      contact => contact.phone === phone,
+    );
+
+    if (getNameExistence) {
+      error(name);
       reset();
       return;
     }
-    error(name);
+    if (getNumberExistence) {
+      error(phone);
+      reset();
+      return;
+    }
+    saveContact(contact);
+    warning();
     reset();
   };
 
